@@ -1,2 +1,2 @@
 # Duino-AVR-emu
-A simple emulator to emulate a connection between Duino-Coin and an Arduino
+A simple tool to emulate a connection between Duino-Coin and an Arduino
