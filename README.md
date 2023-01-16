@@ -12,7 +12,7 @@ This tool has been made for testing purposes only as it is very powerful. Using 
 To build Duino-AVR-emu navigate to the root of this project and run `make`. All output files will be stored under the `build/` directory.
 
 ## Using Duino-AVR-emu
-`build/Duino-AVR-emu /dev/pts/X 256 1000`
+`build/duino-avr-emu /dev/pts/X 256 1000`
 
 This will create a connection on the virtual serial port /dev/pts/X. When running the AVR_Miner.py script from Duino-Coin the device connected to it (the emulator) will have a hashrate of 256 h/s and will take 1000 ms per share.
 
