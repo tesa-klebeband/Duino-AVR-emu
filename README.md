@@ -1,5 +1,5 @@
 # Duino-AVR-emu
-A simple tool to emulate the connection between Duino-Coin and an Arduino
+A tool to emulate the connection between Duino-Coin and an Arduino
 # DISCLAIMER
 This tool has been made for testing purposes only as it is very powerful. Using this tool to mine could get you banned from the duino-coin network. I am **not** responsible for any damage to your duino-coin account.
 ## Building
