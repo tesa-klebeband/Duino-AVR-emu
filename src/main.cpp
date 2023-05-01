@@ -18,7 +18,7 @@ char diffStr[4] = {0};
 char DUCOID[23] = {0};
 uint16_t difficulty = 0;
 uint16_t ducos1result = 0;
-const uint16_t job_maxsize = 104;  
+const uint16_t job_maxsize = 104;
 uint8_t job[job_maxsize];
 
 void initSerial(const char *path)
@@ -72,11 +72,12 @@ void setup(const char *serial)
     initSerial(serial);
 }
 
-uint16_t ducos1a(char *lastblockhash, char *newblockhash, uint16_t difficulty)
+uint16_t ducos1a(char *lastblockhash, char *newblockhash, uint16_t difficulty, int hash_time)
 {
-    for(int i = 0; newblockhash[i] != 0; i++)
+    for (int i = 0; newblockhash[i] != 0; i++)
     {
-        if (newblockhash[i] >= 'a' && newblockhash[i] <= 'f') {
+        if (newblockhash[i] >= 'a' && newblockhash[i] <= 'f')
+        {
             newblockhash[i] -= 'a';
             newblockhash[i] += 'A';
         }
@@ -87,52 +88,52 @@ uint16_t ducos1a(char *lastblockhash, char *newblockhash, uint16_t difficulty)
     for (uint8_t i = 0, j = 0; j < final_len; i += 2, j++)
         job[j] = ((((newblockhash[i] & 0x1F) + 9) % 25) << 4) + ((newblockhash[i + 1] & 0x1F) + 9) % 25;
 
-    for (uint16_t ducos1res = 0; ducos1res < difficulty * 100 + 1; ducos1res++) {
+    for (uint16_t ducos1res = 0; ducos1res < difficulty * 100 + 1; ducos1res++)
+    {
         uint8_t hash_bytes[20];
         char str[46] = {0};
         int dsize = sprintf(str, "%s%d", lastblockhash, ducos1res);
-        SHA1((unsigned char*)str, dsize , hash_bytes);
-        if (memcmp(hash_bytes, job, 20) == 0) return ducos1res;
-  }
-  return 0;
+        SHA1((unsigned char *)str, dsize, hash_bytes);
+        if (memcmp(hash_bytes, job, 20) == 0)
+            return ducos1res;
+        usleep(hash_time * 1000);
+    }
+    return 0;
 }
 
 int main(int argc, char **argv)
 {
-    if (argc < 4) {
-        printf("Usage: build/duino-avr-emu [PORT] [HASHRATE] [WAIT]\n");
+    if (argc < 3)
+    {
+        printf("Usage: build/duino-avr-emu [PORT] [HASHRATE]\n");
         exit(0);
     }
 
     setup(argv[1]);
 
-    printf("Miner starting... awaiting connections\n\n");
-
     uint32_t time = 0;
     uint16_t numShares = 0;
+    float hashrate = (float)atoi(argv[2]);
+    int hashtime = 1000 / (int)hashrate;
 
-    while(1) {
+    while (1)
+    {
         memset(buffer, 0, sizeof(buffer));
 
         while (buffer[0] == 0)
             read(serialPort, buffer, sizeof(buffer));
 
-        printf("%s: New job === ", DUCOID);
-
         memcpy(lastblockhash, buffer, 40);
         memcpy(newblockhash, buffer + 41, 40);
         memcpy(diffStr, buffer + 82, 4);
-    
-        uint16_t res = ducos1a(lastblockhash, newblockhash, atoi(diffStr));
+
+        uint16_t res = ducos1a(lastblockhash, newblockhash, atoi(diffStr), hashtime);
         std::bitset<16> resb(res);
-        float tmp = ((float)res / (float)atoi(argv[2])) * 1000000.0;
-        time = (int) tmp;
+        float tmp = (float)res / hashrate * 1000000.0;
+        time = (int)tmp;
         std::bitset<32> elapsedTime(time);
-        int rsize = sprintf(buffer, "%s,%s,%s\n", resb.to_string().c_str(), elapsedTime.to_string().c_str(),DUCOID);
+        int rsize = sprintf(buffer, "%s,%s,%s\n", resb.to_string().c_str(), elapsedTime.to_string().c_str(), DUCOID);
         write(serialPort, buffer, rsize);
         numShares++;
-        printf("Found share %d ⚙ %d H/s ⚙ diff %d\n", numShares, atoi(argv[2]), atoi(diffStr));
-        usleep(atoi(argv[3]) * 1000);
     }
-
 }
