@@ -6,4 +6,4 @@ prep:
 	mkdir -p build
 
 duino-avr-emu: src/*.cpp
-	$(CPP) $^ -lcrypto -o build/$@
+	$(CPP) $^ -lcrypto -Ofast -o build/$@
