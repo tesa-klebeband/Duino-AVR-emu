@@ -6,7 +6,7 @@ This tool has been made for testing purposes only as it is very powerful. Using 
 ### Requirements
 * g++
 * make
-* openssl
+* openssl (libssl-dev)
 * socat - only required to create a virtual serial connection
 
 To build Duino-AVR-emu navigate to the root of this project and run `make`. All output files will be stored under the `build/` directory.
